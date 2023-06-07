@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:music_project/constants.dart';
 
 import '../controllers/music_controller.dart';
+import '../models/music.dart';
 
 class MusicPage extends StatelessWidget {
   final _musicController = Get.put(MusicController());
@@ -14,8 +15,9 @@ class MusicPage extends StatelessWidget {
         triggerMode: RefreshIndicatorTriggerMode.onEdge,
         onRefresh: _musicController.reload,
         child: Scaffold(
-            backgroundColor: BACKGROUND_COLOR,
-            body: ListView(children: [
+          backgroundColor: BACKGROUND_COLOR,
+          body: ListView(
+            children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
@@ -77,11 +79,12 @@ class MusicPage extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Image.network(
-                            "https://i.ytimg.com/vi/kbf7Outji1E/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBi4YzCUJNLOqecGhmXy6Fj12X-Eg",
-                            height: 75,
-                            width: 75,
-                            fit: BoxFit.cover,
+                          child: Obx(
+                            () => Image.network(
+                              _musicController.current_song.value.thumbnail,
+                              height: 100,
+                              width: 100,
+                            ),
                           ),
                         ),
                         Expanded(
@@ -90,23 +93,29 @@ class MusicPage extends StatelessWidget {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "aLIEz (TV size)",
-                                  style: TextStyle(
-                                    color: WHITE,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                child: Obx(
+                                  () => Text(
+                                    _musicController.current_song.value.title,
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: WHITE,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "SawanoHiroyuki[nZk]:mizuki",
-                                  style: TextStyle(
-                                    color: WHITE,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w200,
+                                child: Obx(
+                                  () => Text(
+                                    _musicController.current_song.value.artist,
+                                    style: TextStyle(
+                                      overflow: TextOverflow.ellipsis,
+                                      color: WHITE,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w200,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -121,91 +130,129 @@ class MusicPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
-                    color: BACKGROUND_COLOR_LIGHT,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
+                  color: BACKGROUND_COLOR_LIGHT,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: Obx(
+                    () => Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            MusicVoteCard(
+                              music: _musicController.next_songs[0],
+                              isVoted: _musicController.isVoted_0.value,
+                              onTap: _musicController.onTap_0,
+                            ),
+                            MusicVoteCard(
+                              music: _musicController.next_songs[1],
+                              isVoted: _musicController.isVoted_1.value,
+                              onTap: _musicController.onTap_1,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            MusicVoteCard(
+                              music: _musicController.next_songs[2],
+                              isVoted: _musicController.isVoted_2.value,
+                              onTap: _musicController.onTap_2,
+                            ),
+                            Obx(
+                              () => MusicVoteCard(
+                                music: _musicController.next_songs[3],
+                                isVoted: _musicController.isVoted_3.value,
+                                onTap: _musicController.onTap_3,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          MusicVoteCard(),
-                          MusicVoteCard(),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          MusicVoteCard(),
-                          MusicVoteCard(),
-                        ],
-                      ),
-                    ])),
+                  ),
+                ),
               ),
-            ])),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 class MusicVoteCard extends StatelessWidget {
-  const MusicVoteCard({
-    super.key,
+  Music music;
+  bool isVoted;
+  void Function() onTap;
+
+  MusicVoteCard({
+    required this.music,
+    required this.isVoted,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        margin: EdgeInsets.all(8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          side: BorderSide(
-            color: WHITE.withOpacity(0.2),
-            width: 2,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Container(
-              child: Column(children: [
-                Expanded(
-                    flex: 10,
-                    child: Container(
-                        child: SizedBox(
-                      height: 20,
-                    ))),
-                Expanded(
-                    flex: 4,
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(15),
-                            bottomRight: Radius.circular(15)),
-                        color: Color(0xFF09080F).withOpacity(0.75),
-                      ),
-                      width: double.infinity,
-                      child: Text(
-                        "aLIEz (TV size)-SawanoHiroyuki[nZk]:mizuki",
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: WHITE),
-                      ),
-                    ))
-              ]),
-              height: 150,
-              width: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                image: DecorationImage(
-                  image: NetworkImage(
-                      "https://i.ytimg.com/vi/kbf7Outji1E/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBi4YzCUJNLOqecGhmXy6Fj12X-Eg"),
-                  fit: BoxFit.cover,
-                ),
-              ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+          margin: const EdgeInsets.all(8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+            side: BorderSide(
+              color: isVoted ? LIGHT_GREEN : WHITE.withOpacity(0.2),
+              width: 2,
             ),
-          ],
-        ));
+          ),
+          child: Stack(
+            children: [
+              Container(
+                height: 150,
+                width: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: DecorationImage(
+                    image: NetworkImage(music.thumbnail),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Column(children: [
+                  Expanded(
+                      flex: 10,
+                      child: Container(
+                          child: const SizedBox(
+                        height: 20,
+                      ))),
+                  Expanded(
+                      flex: 4,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isVoted ? LIGHT_GREEN : Colors.transparent,
+                            width: isVoted ? 2 : 0,
+                          ),
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15)),
+                          color: Color(0xFF09080F).withOpacity(0.75),
+                        ),
+                        width: double.infinity,
+                        child: Text(
+                          music.title,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              TextStyle(color: isVoted ? LIGHT_GREEN : WHITE),
+                        ),
+                      ))
+                ]),
+              ),
+            ],
+          )),
+    );
   }
 }

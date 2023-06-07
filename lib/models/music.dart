@@ -15,6 +15,13 @@ class Music {
     required this.url,
   });
 
+  // add a new constructor with blank values
+  Music.blank()
+      : thumbnail = "",
+        title = "",
+        artist = "",
+        url = "";
+
   Music copyWith({
     String? thumbnail,
     String? title,
